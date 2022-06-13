@@ -11,7 +11,7 @@ Map some key to `:Buffish<CR>`
 
 Only three keys mapped:
 
-1. <CR>` to switch to the buffer
+1. `\<CR\>` to switch to the buffer
 2. `dd` to `bd` that buffer
 3. `q` to close without switching
 
@@ -34,3 +34,7 @@ TODO: Add signs or line number or various things from `:ls` maybe
 TODO: Add configuration?
 
 TODO: Tests?
+
+TODO: only 1 level of disambiguation, maybe needs more?
+
+TODO: make disambiguation easier to understand at a glance

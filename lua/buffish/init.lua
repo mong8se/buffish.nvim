@@ -3,11 +3,22 @@ local fn = vim.fn
 local api = vim.api
 local pretty_print = vim.pretty_print
 
-local M = {}
+local M = {
+    bufnr = false,
+    ns = false,
+}
 
 M.open = function()
-    local self = api.nvim_create_buf(false, true)
-    local ns = api.nvim_create_namespace("buffish-ns")
+    if not M.bufnr or not api.nvim_buf_is_valid(M.bufnr) then
+        M.bufnr = api.nvim_create_buf(false, true)
+    end
+
+    if not M.ns then
+        M.ns = api.nvim_create_namespace("buffish-ns")
+    end
+
+    local self = M.bufnr;
+    local ns = M.ns;
 
     api.nvim_buf_set_option(self, 'buflisted', false)
     api.nvim_buf_set_option(self, 'bufhidden', 'wipe')

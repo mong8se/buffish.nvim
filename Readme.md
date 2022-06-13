@@ -1,6 +1,7 @@
 # Buffish
 
-A buffer switcher in the spirit of dirvish or vinegar.
+A buffer switcher in the spirit of [dirvish](https://github.acom/justinmk/vim-dirvish) or
+[vinegar](https://github.com/tpope/vim-vinegar).
 
 ## Usage
 

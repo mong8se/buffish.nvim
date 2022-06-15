@@ -3,19 +3,14 @@ local fn = vim.fn
 local api = vim.api
 local pretty_print = vim.pretty_print
 
-local M = {
-    bufnr = false,
-    ns = false,
-}
+local M = {bufnr = false, ns = false}
 
 M.open = function()
     if not M.bufnr or not api.nvim_buf_is_valid(M.bufnr) then
         M.bufnr = api.nvim_create_buf(false, true)
     end
 
-    if not M.ns then
-        M.ns = api.nvim_create_namespace("buffish-ns")
-    end
+    if not M.ns then M.ns = api.nvim_create_namespace("buffish-ns") end
 
     local self = M.bufnr;
     local ns = M.ns;
@@ -27,9 +22,7 @@ M.open = function()
     api.nvim_buf_set_option(self, 'filetype', 'buffish')
 
     api.nvim_buf_set_keymap(self, 'n', "q", '', {
-        callback = function()
-            api.nvim_buf_delete(self, {})
-        end,
+        callback = function() api.nvim_buf_delete(self, {}) end,
         nowait = true,
         noremap = true,
         silent = true
@@ -46,7 +39,40 @@ function selected_buffer(handles)
 end
 
 function safely_set_cursor(self, loc)
-    api.nvim_win_set_cursor(0, { math.min(api.nvim_buf_line_count(self), loc), 0 })
+    api.nvim_win_set_cursor(0, {math.min(api.nvim_buf_line_count(self), loc), 0})
+end
+
+function disamb(handles, names, pass_number)
+    local matches_found = false
+    local results = {}
+
+    for name, bufl in pairs(names) do
+        if #bufl < 2 then
+            results[name] = names[name]
+        else
+            matches_found = true
+            for _, bufi in ipairs(bufl) do
+                find_matches(results, handles[bufi].name, pass_number, bufi)
+            end
+        end
+    end
+
+    if matches_found then
+        return disamb(handles, results, pass_number + 1)
+    else
+        return results
+    end
+end
+
+function find_matches(list, name, pass_number, bufi)
+    local parts = vim.split(name, "/")
+
+    local filename = string.format(string.rep("%s/", pass_number) .. "%s",
+                                   unpack(parts, #parts - pass_number))
+
+    if list[filename] == nil then list[filename] = {} end
+
+    table.insert(list[filename], bufi)
 end
 
 function render(self, ns)
@@ -59,7 +85,8 @@ function render(self, ns)
     vim.wo.concealcursor = "n"
 
     local autocmd = vim.api.nvim_create_autocmd
-    local buffish_group = vim.api.nvim_create_augroup('buffish-au', {clear = true})
+    local buffish_group = vim.api.nvim_create_augroup('buffish-au',
+                                                      {clear = true})
 
     autocmd("BufUnload", {
         buffer = self,
@@ -70,22 +97,24 @@ function render(self, ns)
         group = buffish_group
     })
 
-    for _, buffer in ipairs(fn.getbufinfo({buflisted = 1})) do
+    for i, buffer in ipairs(fn.getbufinfo({buflisted = 1})) do
         local name = buffer.name
 
         if #name > 0 then
             table.insert(handles, buffer)
-
-            local parts = vim.split(buffer.name, "/")
-            local filename = parts[#parts]
-
-            names[filename] = names[filename]==nil and 1 or names[filename] + 1
+            find_matches(names, buffer.name, 0, i)
         else
-            pretty_print("no name")
+            -- pretty_print("no name")
         end
     end
 
-    table.sort(handles, function(a,b)
+    local nnames = disamb(handles, names, 1)
+
+    for name, bufl in pairs(nnames) do
+        for _, bufi in ipairs(bufl) do handles[bufi].display_name = name end
+    end
+
+    table.sort(handles, function(a, b)
         if a.lastused == b.lastused then
             return a.bufnr > b.bufnr
         else
@@ -97,18 +126,29 @@ function render(self, ns)
     api.nvim_buf_set_lines(self, 0, -1, false, {})
 
     for i, buffer in ipairs(handles) do
-        api.nvim_buf_set_lines(self, i-1, i, false, { buffer.name })
+        api.nvim_buf_set_lines(self, i - 1, i, false, {buffer.name})
 
-        local parts = vim.split(buffer.name, "/")
-        local filename = parts[#parts]
+        local parts = vim.split(buffer.display_name, "/")
 
-        local add_prefix = names[filename] > 1
+        local distance = 0
 
-        if add_prefix then
-            api.nvim_buf_set_extmark(self, ns, i-1, 0, {virt_text_win_col=0, virt_text={{parts[#parts-1].."/", "Directory"}}})
+        api.nvim_buf_set_extmark(self, ns, i - 1, 0, {
+            sign_text = string.format("% i", buffer.bufnr)
+        })
+
+        for j = 1, #parts do
+            -- api.nvim_buf_set_extmark(self, ns, i - 1, 0, {
+            api.nvim_buf_set_extmark(self, ns, i - 1, distance, {
+                virt_text_hide = true,
+                -- virt_text_win_col = distance,
+                virt_text = {
+                    j == #parts and {parts[j], "Identifier"} or
+                        {parts[j] .. "/", "Directory"}
+                }
+            })
+            distance = distance + 1 + #parts[j]
         end
-        api.nvim_buf_set_extmark(self, ns, i-1, 1,
-            {virt_text_win_col=add_prefix and #parts[#parts-1]+1 or 0, virt_text={{filename, "Identifier"}}})
+
     end
 
     api.nvim_buf_set_option(self, 'modified', false)

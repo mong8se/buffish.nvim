@@ -26,7 +26,7 @@ least recently used at the bottom.
 It automatically starts with the cursor on the 2nd line (if there is one),
 so you can easily switch back and forth between two buffers.
 
-TODO: `conceallevel `and `concealcursor `are not properly getting set back
+DONE: `conceallevel `and `concealcursor `are not properly getting set back
 to the original when switching the window
 
 TODO: Add signs or line number or various things from `:ls` maybe
@@ -35,6 +35,6 @@ TODO: Add configuration?
 
 TODO: Tests?
 
-TODO: only 1 level of disambiguation, maybe needs more?
+DONE: only 1 level of disambiguation, maybe needs more?
 
-TODO: make disambiguation easier to understand at a glance
+DONE: make disambiguation easier to understand at a glance

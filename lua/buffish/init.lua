@@ -1,13 +1,10 @@
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
-local pretty_print = vim.pretty_print
 
 local M = {
     bufnr = false,
     ns = api.nvim_create_namespace("buffish-ns"),
-    augroup = vim.api.nvim_create_augroup('buffish-au',
-        {clear = true})
 }
 
 M.open = function()
@@ -15,19 +12,10 @@ M.open = function()
         M.bufnr = api.nvim_create_buf(false, true)
     end
 
-    local handles = get_buffer_handles()
-
-    api.nvim_buf_set_option(M.bufnr, 'buflisted', false)
-    api.nvim_buf_set_option(M.bufnr, 'bufhidden', 'wipe')
-    api.nvim_buf_set_option(M.bufnr, 'buftype', 'nofile')
-    api.nvim_buf_set_option(M.bufnr, 'swapfile', false)
     api.nvim_buf_set_option(M.bufnr, 'filetype', 'buffish')
 
-    save_window_settings()
+    render()
 
-    set_mappings(handles)
-
-    render(handles)
     api.nvim_win_set_buf(0, M.bufnr)
     safely_set_cursor(2)
 end
@@ -40,8 +28,6 @@ function get_buffer_handles()
         if #buffer.name > 0 then
             table.insert(handles, buffer)
             find_matches(names, buffer.name, 0, i)
-        else
-            -- pretty_print("no name")
         end
     end
 
@@ -62,40 +48,48 @@ function get_buffer_handles()
     return handles
 end
 
-function render(handles)
+function render()
+    local handles = get_buffer_handles()
+    local line_to_bufnr = {}
+
     api.nvim_buf_set_option(M.bufnr, 'modifiable', true)
     api.nvim_buf_set_lines(M.bufnr, 0, -1, false, {})
 
     for i, buffer in ipairs(handles) do
+        line_to_bufnr[i] = buffer.bufnr
+
         api.nvim_buf_set_lines(M.bufnr, i - 1, i, false, {buffer.name})
 
         local parts = vim.split(buffer.display_name, "/")
         local distance = 0
 
-        api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, 0, {
-            sign_text = string.format("% i", buffer.bufnr)
-        })
-
-        for j = 1, #parts do
+        for j = 1, #parts-1 do
             -- api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, 0, {
             api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, distance, {
-                virt_text_hide = true,
                 -- virt_text_win_col = distance,
-                virt_text = {
-                    j == #parts and {parts[j], "Identifier"} or
-                        {parts[j] .. "/", "Directory"}
-                }
+                virt_text = { {parts[j] .. "/", "Directory"} },
             })
             distance = distance + 1 + #parts[j]
         end
-    end
 
+        api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, 0, {
+            -- virt_text_win_col = distance,
+            virt_text = {{parts[#parts], "Identifier"}},
+            sign_text = string.format("% i", buffer.bufnr)
+        })
+
+    end
+    api.nvim_buf_set_var(M.bufnr, 'line_to_bufnr', line_to_bufnr)
     api.nvim_buf_set_option(M.bufnr, 'modified', false)
     api.nvim_buf_set_option(M.bufnr, 'modifiable', false)
 end
 
-function selected_buffer(handles)
-    return handles[api.nvim_win_get_cursor(0)[1]].bufnr
+function current_line_number()
+    return api.nvim_win_get_cursor(0)[1]
+end
+
+function selected_buffer()
+    return vim.b[M.bufnr].line_to_bufnr[current_line_number()]
 end
 
 function safely_set_cursor(loc)
@@ -135,51 +129,20 @@ function disamb(handles, names, pass_number)
     end
 end
 
-function save_window_settings()
-    vim.w.old_conceallevel = vim.wo.conceallevel
-    vim.wo.conceallevel = 1
-    vim.w.old_concealcursor = vim.wo.concealcursor
-    vim.wo.concealcursor = "n"
-
-    api.nvim_create_autocmd("BufUnload", {
-        buffer = M.bufnr,
-        callback = function()
-            vim.wo.conceallevel = vim.w.old_conceallevel
-            vim.wo.concealcursor = vim.w.old_concealcursor
-        end,
-        group = M.augroup
-    })
-end
-
-function set_mappings(handles)
-    api.nvim_buf_set_keymap(M.bufnr, 'n', "q", '', {
+M.actions = {
+    quit = function()
         -- TODO: Is this the best way to close and return to previous buffer?
-        callback = function() api.nvim_buf_delete(M.bufnr, {}) end,
-        nowait = true,
-        noremap = true,
-        silent = true
-    })
-
-    api.nvim_buf_set_keymap(M.bufnr, 'n', "<CR>", '', {
-        callback = function()
-            api.nvim_win_set_buf(0, selected_buffer(handles))
-        end,
-        nowait = true,
-        noremap = true,
-        silent = true
-    })
-
-    api.nvim_buf_set_keymap(M.bufnr, 'n', "dd", '', {
-        callback = function()
-            local old_line = api.nvim_win_get_cursor(0)[1]
-            api.nvim_buf_delete(selected_buffer(handles), {})
-            render(M.bufnr)
-            safely_set_cursor(M.bufnr, old_line)
-        end,
-        nowait = true,
-        noremap = true,
-        silent = true
-    })
-end
+        api.nvim_buf_delete(0, {})
+    end,
+    delete = function()
+        local old_line = current_line_number()
+        api.nvim_buf_delete(selected_buffer(), {})
+        render()
+        safely_set_cursor(old_line)
+    end,
+    select = function()
+        api.nvim_win_set_buf(0, selected_buffer())
+    end
+}
 
 return M

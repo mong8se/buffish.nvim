@@ -33,7 +33,7 @@ api.nvim_create_autocmd("BufWinLeave", {
   group = augroup
 })
 
-api.nvim_create_autocmd("BufDelete", {
+api.nvim_create_autocmd({"BufDelete", "BufAdd"}, {
   callback = function(details)
     actions.rerender(details)
   end,

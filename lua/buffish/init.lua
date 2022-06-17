@@ -56,6 +56,7 @@ function render()
     api.nvim_buf_set_lines(M.bufnr, 0, -1, false, {})
 
     for i, buffer in ipairs(handles) do
+        -- if not api.nvim_buf_is_valid(buffer.bufnr) then break end
         line_to_bufnr[i] = buffer.bufnr
 
         api.nvim_buf_set_lines(M.bufnr, i - 1, i, false, {buffer.name})
@@ -137,15 +138,15 @@ M.actions = {
     delete = function()
         local old_line = current_line_number()
         api.nvim_buf_delete(selected_buffer(), {})
-        render()
-        safely_set_cursor(old_line)
+        vim.schedule(function()
+            safely_set_cursor(old_line)
+        end)
     end,
     select = function()
         api.nvim_win_set_buf(0, selected_buffer())
     end,
     rerender = function(details)
         if details.buf == M.bufnr or
-            not api.nvim_buf_is_loaded(M.bufnr) or
             api.nvim_buf_get_option(details.buf, 'buflisted') == false then
             return
         end

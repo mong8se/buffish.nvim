@@ -14,6 +14,9 @@ Map some key to `:Buffish<CR>` or type it.
 
 The list of filenames in open buffers.
 
+Why only show the filename? Because it's quicker for visual
+identification.
+
 If more than one filename matches, then it will include as much of the
 path that is necessary to make them unique.
 
@@ -22,8 +25,6 @@ least recently used at the bottom.
 
 It automatically starts with the cursor on the 2nd line (if there is one),
 so you can easily switch back and forth between two buffers.
-
-Why only show the filename? Because it's quicker for visual identification
 
 ### What do I push?
 
@@ -48,6 +49,8 @@ Whoever smelt it, dealt it. So you tell me.
 Probably
 
 ## TODO
+
+TODO: Will it even work on windows?
 
 TODO: Add ~~signs~~ or line number or various things from `:ls` maybe
 

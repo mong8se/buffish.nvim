@@ -30,7 +30,7 @@ so you can easily switch back and forth between two buffers.
 
 Mappings in the list:
 
-1. `\<CR\>` to switch to the buffer
+1. `<CR>` to switch to the buffer
 2. `dd` to `bd` that buffer
 3. `q` to close without switching
 4. `s` to open that buffer in a split either horizontally or vertically,

@@ -3,8 +3,8 @@
 A buffer switcher in the spirit of [dirvish](https://github.acom/justinmk/vim-dirvish) or
 [vinegar](https://github.com/tpope/vim-vinegar).
 
-Opens a buffer list in the current window to choose to display in that
-same window.
+Opens a buffer list in the current window, so you can select a buffer to
+display in the same window.
 
 ## Usage
 
@@ -43,13 +43,21 @@ way, etc.
 
 Whoever smelt it, dealt it. So you tell me.
 
-## TODO
+## Aren't there a million of these already?
 
-DONE: `conceallevel `and `concealcursor `are not properly getting set back
-to the original when switching the window
+Probably
+
+## TODO
 
 TODO: Add ~~signs~~ or line number or various things from `:ls` maybe
 
 TODO: Add configuration?
 
 TODO: Tests?
+
+DONE: `conceallevel `and `concealcursor `are not properly getting set back
+to the original when switching the window
+
+DONE: only 1 level of disambiguation, maybe needs more?
+
+DONE: make disambiguation easier to understand at a glance

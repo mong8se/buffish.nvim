@@ -33,6 +33,13 @@ api.nvim_create_autocmd("BufWinLeave", {
   group = augroup
 })
 
+api.nvim_create_autocmd("BufDelete", {
+  callback = function(details)
+    actions.rerender(details)
+  end,
+  group = augroup
+})
+
 api.nvim_buf_set_keymap(0, 'n', "q", '', {
   callback = actions.quit,
   nowait = true,
@@ -53,4 +60,3 @@ api.nvim_buf_set_keymap(0, 'n', "dd", '', {
   noremap = true,
   silent = true
 })
-

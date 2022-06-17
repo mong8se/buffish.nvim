@@ -142,6 +142,14 @@ M.actions = {
     end,
     select = function()
         api.nvim_win_set_buf(0, selected_buffer())
+    end,
+    rerender = function(details)
+        if details.buf == M.bufnr or
+            not api.nvim_buf_is_loaded(M.bufnr) or
+            api.nvim_buf_get_option(details.buf, 'buflisted') == false then
+            return
+        end
+        vim.schedule(render)
     end
 }
 

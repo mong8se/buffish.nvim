@@ -6,6 +6,8 @@ A buffer switcher in the spirit of [dirvish](https://github.acom/justinmk/vim-di
 Opens a buffer list in the current window, so you can select a buffer to
 display in the same window.
 
+Only tested in nvim v0.7.0 on fedora linux and macos.
+
 ## Usage
 
 Map some key to `:Buffish<CR>` or type it.

@@ -12,7 +12,6 @@ local augroup = vim.api.nvim_create_augroup('buffish-au',
 api.nvim_create_autocmd("BufWinEnter", {
   buffer = 0,
   callback = function()
-    vim.pretty_print("enter")
     vim.w.old_conceallevel = vim.wo.conceallevel
     vim.wo.conceallevel = 1
     vim.w.old_concealcursor = vim.wo.concealcursor
@@ -24,7 +23,6 @@ api.nvim_create_autocmd("BufWinEnter", {
 api.nvim_create_autocmd("BufWinLeave", {
   buffer = 0,
   callback = function()
-    vim.pretty_print("leave")
     vim.wo.conceallevel = vim.w.old_conceallevel
     vim.w.old_conceallevel = nil
     vim.wo.concealcursor = vim.w.old_concealcursor

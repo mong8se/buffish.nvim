@@ -61,24 +61,24 @@ function render()
 
         api.nvim_buf_set_lines(M.bufnr, i - 1, i, false, {buffer.name})
 
-        local parts = vim.split(buffer.display_name, "/")
-        local distance = 0
-
-        for j = 1, #parts-1 do
-            -- api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, 0, {
-            api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, distance, {
-                -- virt_text_win_col = distance,
-                virt_text = { {parts[j] .. "/", "Directory"} },
-            })
-            distance = distance + 1 + #parts[j]
-        end
+        local filename = vim.fn.fnamemodify(buffer.display_name, ":t")
 
         api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, 0, {
-            -- virt_text_win_col = distance,
-            virt_text = {{parts[#parts], "Identifier"}},
-            sign_text = string.format("%2i", buffer.bufnr)
+            sign_text = string.format("%2i", buffer.bufnr),
+            end_col = #buffer.name - #buffer.display_name,
+            hl_group = "Normal",
+            conceal = " "
         })
 
+        api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, #buffer.name - #buffer.display_name, {
+            hl_group = "Directory",
+            end_col = #buffer.name - #filename
+        })
+
+        api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, #buffer.name - #filename, {
+            hl_group = "Identifier",
+            end_col = #buffer.name
+        })
     end
     api.nvim_buf_set_var(M.bufnr, 'line_to_bufnr', line_to_bufnr)
     api.nvim_buf_set_option(M.bufnr, 'modified', false)
@@ -100,7 +100,7 @@ end
 function find_matches(list, name, pass_number, bufi)
     local parts = vim.split(name, "/")
 
-    local filename = string.format(string.rep("%s/", pass_number) .. "%s",
+    local filename = string.format(string.rep("%s", pass_number + 1, "/"),
         unpack(parts, #parts - pass_number))
 
     if list[filename] == nil then list[filename] = {} end

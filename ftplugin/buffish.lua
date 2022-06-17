@@ -58,3 +58,10 @@ api.nvim_buf_set_keymap(0, 'n', "dd", '', {
   noremap = true,
   silent = true
 })
+
+api.nvim_buf_set_keymap(0, 'n', "s", '', {
+  callback = actions.split,
+  nowait = true,
+  noremap = true,
+  silent = true
+})

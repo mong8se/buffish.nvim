@@ -98,7 +98,7 @@ function safely_set_cursor(loc)
 end
 
 function find_matches(list, name, pass_number, bufi)
-    local parts = vim.split(name, "/")
+    local parts = vim.split(name, "/", { plain = true, trimempty = true })
 
     local filename = string.format(string.rep("%s", pass_number + 1, "/"),
         unpack(parts, #parts - pass_number))
@@ -151,6 +151,14 @@ M.actions = {
             return
         end
         vim.schedule(render)
+    end,
+    split = function()
+        local which = "split"
+
+        if fn.winwidth(0) > fn.winheight(0) * 2 then which = "vsplit" end
+
+        local line = api.nvim_win_get_cursor(0)[1]
+        cmd(string.format("%s %s", which, api.nvim_buf_get_lines(0, line-1, line, true)[1] ))
     end
 }
 

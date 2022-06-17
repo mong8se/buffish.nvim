@@ -75,7 +75,7 @@ function render()
         api.nvim_buf_set_extmark(M.bufnr, M.ns, i - 1, 0, {
             -- virt_text_win_col = distance,
             virt_text = {{parts[#parts], "Identifier"}},
-            sign_text = string.format("% i", buffer.bufnr)
+            sign_text = string.format("%2i", buffer.bufnr)
         })
 
     end

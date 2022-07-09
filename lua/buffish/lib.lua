@@ -4,7 +4,46 @@ local session = require("buffish.session")
 
 local ns = api.nvim_create_namespace("buffish-ns")
 
-get_buffer_handles = function()
+local extract_filename = function(name, depth)
+    local parts = vim.split(name, "/", { plain = true, trimempty = true })
+
+    local filename = string.format(string.rep("%s", depth + 1, "/"),
+        unpack(parts, #parts - depth))
+
+    return filename
+end
+
+local safely_insert = function(list, entry)
+    list = list or {}
+    table.insert(list, entry)
+    return list
+end
+
+local disambiguate
+disambiguate = function(handles, names, depth)
+    local matches_found = false
+    local results = {}
+
+    for name, bufl in pairs(names) do
+        if #bufl < 2 then
+            results[name] = names[name]
+        else
+            matches_found = true
+            for _, bufi in ipairs(bufl) do
+                local filename = extract_filename(handles[bufi].name, depth)
+                results[filename] = safely_insert(results[filename], bufi)
+            end
+        end
+    end
+
+    if matches_found then
+        return disambiguate(handles, results, depth + 1)
+    else
+        return results
+    end
+end
+
+local get_buffer_handles = function()
     local handles = {}
     local names = {}
 
@@ -33,57 +72,15 @@ get_buffer_handles = function()
     return handles
 end
 
-current_line_number = function()
+local current_line_number = function()
     return api.nvim_win_get_cursor(0)[1]
-end
-
-selected_buffer = function()
-    return vim.b[session.getBufnr()].line_to_bufnr[current_line_number()]
-end
-
-extract_filename = function(name, depth)
-    local parts = vim.split(name, "/", { plain = true, trimempty = true })
-
-    local filename = string.format(string.rep("%s", depth + 1, "/"),
-        unpack(parts, #parts - depth))
-
-    return filename
-end
-
-safely_insert = function(list, entry)
-    list = list or {}
-    table.insert(list, entry)
-    return list
-end
-
-disambiguate = function(handles, names, depth)
-    local matches_found = false
-    local results = {}
-
-    for name, bufl in pairs(names) do
-        if #bufl < 2 then
-            results[name] = names[name]
-        else
-            matches_found = true
-            for _, bufi in ipairs(bufl) do
-                local filename = extract_filename(handles[bufi].name, depth)
-                results[filename] = safely_insert(results[filename], bufi)
-            end
-        end
-    end
-
-    if matches_found then
-        return disambiguate(handles, results, depth + 1)
-    else
-        return results
-    end
 end
 
 local lib = {
     render = function()
         local handles = get_buffer_handles()
         local line_to_bufnr = {}
-        local bufnr = session.getBufnr()
+        local bufnr = session.get_bufnr()
 
         api.nvim_buf_set_option(bufnr, 'modifiable', true)
         api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
@@ -119,7 +116,11 @@ local lib = {
     end,
 
     safely_set_cursor = function(loc)
-        api.nvim_win_set_cursor(0, {math.min(api.nvim_buf_line_count(session.getBufnr()), loc), 0})
+        api.nvim_win_set_cursor(0, {math.min(api.nvim_buf_line_count(session.get_bufnr()), loc), 0})
+    end,
+
+    selected_buffer = function()
+        return vim.b[session.get_bufnr()].line_to_bufnr[current_line_number()]
     end
 }
 

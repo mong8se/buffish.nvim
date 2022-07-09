@@ -6,11 +6,10 @@ local session = require("buffish.session")
 local lib = require("buffish.lib")
 
 local M = {
-    bufnr = false,
 }
 
 M.open = function()
-    local buffnr = session.getBufnr()
+    local buffnr = session.get_bufnr()
     api.nvim_buf_set_option(buffnr, 'filetype', 'buffish')
 
     lib.render()
@@ -26,16 +25,16 @@ M.actions = {
     end,
     delete = function()
         local old_line = current_line_number()
-        api.nvim_buf_delete(selected_buffer(), {})
+        api.nvim_buf_delete(lib.selected_buffer(), {})
         vim.schedule(function()
             lib.safely_set_cursor(old_line)
         end)
     end,
     select = function()
-        api.nvim_win_set_buf(0, selected_buffer())
+        api.nvim_win_set_buf(0, lib.selected_buffer())
     end,
     rerender = function(details)
-        if details.buf == session.getBufnr() or
+        if details.buf == session.get_bufnr() or
             api.nvim_buf_get_option(details.buf, 'buflisted') == false then
             return
         end

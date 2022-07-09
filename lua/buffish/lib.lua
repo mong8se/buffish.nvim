@@ -79,15 +79,15 @@ end
 local lib = {
     render = function()
         local handles = get_buffer_handles()
-        local line_to_bufnr = {}
         local bufnr = session.get_bufnr()
+        session.buf_index = {}
 
         api.nvim_buf_set_option(bufnr, 'modifiable', true)
         api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
 
         for i, buffer in ipairs(handles) do
             -- if not api.nvim_buf_is_valid(buffer.bufnr) then break end
-            line_to_bufnr[i] = buffer.bufnr
+            session.buf_index[i] = buffer.bufnr
 
             api.nvim_buf_set_lines(bufnr, i - 1, i, false, {buffer.name})
 
@@ -110,7 +110,7 @@ local lib = {
                 end_col = #buffer.name
             })
         end
-        api.nvim_buf_set_var(bufnr, 'line_to_bufnr', line_to_bufnr)
+
         api.nvim_buf_set_option(bufnr, 'modified', false)
         api.nvim_buf_set_option(bufnr, 'modifiable', false)
     end,
@@ -120,7 +120,7 @@ local lib = {
     end,
 
     selected_buffer = function()
-        return vim.b[session.get_bufnr()].line_to_bufnr[current_line_number()]
+        return session.buf_index[current_line_number()]
     end
 }
 

@@ -9,7 +9,9 @@ local session = {
     end
 
     return bufnr
-  end
+  end,
+
+  buf_index = {}
 }
 
 return session

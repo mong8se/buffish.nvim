@@ -23,6 +23,7 @@ M.actions = {
         -- TODO: Is this the best way to close and return to previous buffer?
         api.nvim_buf_delete(0, {})
     end,
+
     delete = function()
         local old_line = current_line_number()
         api.nvim_buf_delete(lib.selected_buffer(), {})
@@ -30,9 +31,11 @@ M.actions = {
             lib.safely_set_cursor(old_line)
         end)
     end,
+
     select = function()
         api.nvim_win_set_buf(0, lib.selected_buffer())
     end,
+
     rerender = function(details)
         if details.buf == session.get_bufnr() or
             api.nvim_buf_get_option(details.buf, 'buflisted') == false then
@@ -40,6 +43,7 @@ M.actions = {
         end
         vim.schedule(lib.render)
     end,
+
     split = function()
         local which = "split"
 

@@ -1,5 +1,5 @@
 local api = vim.api
-local actions = require("buffish").actions
+local actions = require("buffish.actions")
 
 api.nvim_buf_set_option(0, 'buflisted', false)
 api.nvim_buf_set_option(0, 'bufhidden', 'delete')

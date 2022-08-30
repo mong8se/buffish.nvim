@@ -12,11 +12,9 @@ local selected_buffer = function()
 end
 
 local M = {
-    quit = function()
-        -- TODO: Is this the best way to close and return to previous buffer?
-        -- api.nvim_buf_delete(0, {})
-        api.nvim_win_close(0, true)
-    end,
+  quit = function()
+    session.restore_prev_buf()
+  end,
 
     delete = function()
         local old_line = current_line_number()

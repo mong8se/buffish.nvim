@@ -10,9 +10,7 @@ local selected_buffer = function()
 end
 
 local M = {
-  quit = function()
-    session.restore_prev_buf()
-  end,
+  quit = function() session.restore_prev_buf() end,
 
   delete = function()
     local old_line = current_line_number()

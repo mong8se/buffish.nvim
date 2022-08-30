@@ -6,8 +6,7 @@ api.nvim_buf_set_option(0, 'bufhidden', 'delete')
 api.nvim_buf_set_option(0, 'buftype', 'nofile')
 api.nvim_buf_set_option(0, 'swapfile', false)
 
-local augroup = vim.api.nvim_create_augroup('buffish-au',
-  {clear = true})
+local augroup = vim.api.nvim_create_augroup('buffish-au', {clear = true})
 
 api.nvim_create_autocmd("BufWinEnter", {
   buffer = 0,
@@ -32,9 +31,7 @@ api.nvim_create_autocmd("BufWinLeave", {
 })
 
 api.nvim_create_autocmd({"BufDelete", "BufAdd"}, {
-  callback = function(details)
-    actions.rerender(details)
-  end,
+  callback = function(details) actions.rerender(details) end,
   group = augroup
 })
 

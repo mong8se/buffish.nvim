@@ -6,15 +6,17 @@ local session = require("buffish.session")
 local display = require("buffish.display")
 
 local M = {
-    open = function()
-        local buffnr = session.get_bufnr()
-        api.nvim_buf_set_option(buffnr, 'filetype', 'buffish')
+  open = function()
+    local buffnr = session.get_bufnr()
+    api.nvim_buf_set_option(buffnr, 'filetype', 'buffish')
 
-        display.render()
+    display.render()
 
-        api.nvim_win_set_buf(0, buffnr)
-        display.safely_set_cursor(2)
-    end
+    session.save_current_buf()
+
+    api.nvim_win_set_buf(0, buffnr)
+    display.safely_set_cursor(2)
+  end
 }
 
 return M

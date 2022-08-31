@@ -34,7 +34,7 @@ local M = {
     if fn.winwidth(0) > fn.winheight(0) * 2 then which = "vsplit" end
 
     local line = api.nvim_win_get_cursor(0)[1]
-    cmd(string.format("%s %s", which,
+    vim.cmd(string.format("%s %s", which,
                       api.nvim_buf_get_lines(0, line - 1, line, true)[1]))
   end
 }

@@ -57,7 +57,11 @@ return {
     names = disambiguate(handles, names, 1)
 
     for name, bufl in pairs(names) do
-      for _, bufi in ipairs(bufl) do handles[bufi].display_name = name end
+      for _, bufi in ipairs(bufl) do 
+	    if handles[bufi] then
+		  handles[bufi].display_name = name
+		end
+	  end
     end
 
     table.sort(handles, function(a, b)

@@ -16,8 +16,9 @@ let g:loaded_buffish = 1
 
 " Defines a package path for Lua. This facilitates importing the
 " Lua modules from the plugin's dependency directory.
-let s:lua_rocks_deps_loc =  expand("<sfile>:h:r") . "/../lua/buffish/deps"
-exe "lua package.path = package.path .. ';" . s:lua_rocks_deps_loc . "/lua-?/init.lua'"
+" let s:lua_rocks_deps_loc =  expand("<sfile>:h:r") . "/../lua/buffish/deps"
+" exe "lua package.path = package.path .. ';" . s:lua_rocks_deps_loc . "/lua-?/init.lua'"
+lua require('buffish.init')
 
 " Exposes the plugin's functions for use as commands in Neovim.
 command! -nargs=0 Buffish lua require("buffish").open()

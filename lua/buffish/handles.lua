@@ -5,6 +5,10 @@ local safely_insert = function(list, entry)
 end
 
 local extract_filename = function(name, depth)
+  -- replace \ with / for windows paths..
+  if package.config:sub(1,1) == '\\' then
+	  name = name:gsub("\\", "/")
+  end
   local parts = vim.split(name, "/", {plain = true, trimempty = true})
 
   local filename = string.format(string.rep("%s", depth + 1, "/"),

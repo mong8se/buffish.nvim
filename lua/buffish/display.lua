@@ -16,33 +16,33 @@ local M = {
 
     for i, buffer in ipairs(handles) do
       -- if not api.nvim_buf_is_valid(buffer.bufnr) then break end
-	  if buffer and buffer.display_name then
-		session.buf_index[i] = buffer.bufnr
+      if buffer and buffer.display_name then
+        session.buf_index[i] = buffer.bufnr
 
-	    api.nvim_buf_set_lines(bufnr, i - 1, i, false, {buffer.name})
+        api.nvim_buf_set_lines(bufnr, i - 1, i, false, { buffer.name })
 
-	    local filename = vim.fn.fnamemodify(buffer.display_name, ":t")
+        local filename = vim.fn.fnamemodify(buffer.display_name, ":t")
 
-	    api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {
-			sign_text = string.format("%2i", buffer.bufnr),
-			end_col = #buffer.name - #buffer.display_name,
-			hl_group = "Normal",
-			conceal = " "
-		})
+        api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {
+          sign_text = string.format("%2i", buffer.bufnr),
+          end_col = #buffer.name - #buffer.display_name,
+          hl_group = "Normal",
+          conceal = " "
+        })
 
-		api.nvim_buf_set_extmark(bufnr, ns, i - 1,
-								   #buffer.name - #buffer.display_name, {
-			hl_group = "Directory",
-			end_col = #buffer.name - #filename
-		})
+        api.nvim_buf_set_extmark(bufnr, ns, i - 1,
+          #buffer.name - #buffer.display_name, {
+            hl_group = "Directory",
+            end_col = #buffer.name - #filename
+          })
 
-		api.nvim_buf_set_extmark(bufnr, ns, i - 1, #buffer.name - #filename, {
-			hl_group = "Identifier",
-			end_col = #buffer.name
-		})
-	  end
+        api.nvim_buf_set_extmark(bufnr, ns, i - 1, #buffer.name - #filename, {
+          hl_group = "Identifier",
+          end_col = #buffer.name
+        })
+      end
     end
-	
+
     api.nvim_buf_set_option(bufnr, 'modified', false)
     api.nvim_buf_set_option(bufnr, 'modifiable', false)
   end,

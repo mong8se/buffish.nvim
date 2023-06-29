@@ -16,7 +16,7 @@ local M = {
 
     for i, buffer in ipairs(handles) do
       -- if not api.nvim_buf_is_valid(buffer.bufnr) then break end
-      if buffer and buffer.display_name then
+      if buffer and buffer.display_name and buffer.bufnr then
         session.buf_index[i] = buffer.bufnr
 
         api.nvim_buf_set_lines(bufnr, i - 1, i, false, { buffer.name })
@@ -24,7 +24,7 @@ local M = {
         local filename = vim.fn.fnamemodify(buffer.display_name, ":t")
 
         api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {
-          sign_text = string.format("%4i", buffer.bufnr),
+          sign_text = string.format("%2i", buffer.bufnr),
           end_col = #buffer.name - #buffer.display_name,
           hl_group = "Normal",
           conceal = " "

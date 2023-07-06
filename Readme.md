@@ -52,7 +52,7 @@ Probably
 
 ## TODO
 
-TODO: Will it even work on windows?
+TODO: ~~Will it even work on windows?~~ Thanks to https://github.com/IRooc
 
 TODO: Add ~~signs~~ or line number or various things from `:ls` maybe
 

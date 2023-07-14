@@ -49,7 +49,7 @@ return {
     for i, buffer in ipairs(vim.fn.getbufinfo({buflisted = 1})) do
       if #buffer.name > 0 then
         table.insert(handles, buffer)
-        filename = extract_filename(buffer.name, 0)
+        local filename = extract_filename(buffer.name, 0)
         names[filename] = safely_insert(names[filename], i)
       end
     end
@@ -66,7 +66,7 @@ return {
 
     table.sort(handles, function(a, b)
       if a.lastused == b.lastused then
-        return a.bufnr > b.bufnr
+        return a.bufnr < b.bufnr
       else
         return a.lastused > b.lastused
       end

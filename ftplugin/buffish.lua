@@ -1,4 +1,7 @@
 local api = vim.api
+local w = vim.w
+local wo = vim.wo
+
 local actions = require("buffish.actions")
 
 api.nvim_buf_set_option(0, 'buflisted', false)
@@ -11,10 +14,14 @@ local augroup = vim.api.nvim_create_augroup('buffish-au', {clear = true})
 api.nvim_create_autocmd("BufWinEnter", {
   buffer = 0,
   callback = function()
-    vim.w.buffish_saved_conceallevel = vim.wo.conceallevel
-    vim.wo.conceallevel = 1
-    vim.w.buffish_saved_concealcursor = vim.wo.concealcursor
-    vim.wo.concealcursor = "n"
+    w.buffish_saved_conceallevel = wo.conceallevel
+    wo.conceallevel = 1
+
+    w.buffish_saved_concealcursor = wo.concealcursor
+    wo.concealcursor = "n"
+
+    w.buffish_saved_wrap = wo.wrap
+    wo.wrap = false
   end,
   group = augroup
 })
@@ -22,10 +29,16 @@ api.nvim_create_autocmd("BufWinEnter", {
 api.nvim_create_autocmd("BufWinLeave", {
   buffer = 0,
   callback = function()
-    vim.wo.conceallevel = vim.w.buffish_saved_conceallevel
-    vim.w.buffish_saved_conceallevel = nil
-    vim.wo.concealcursor = vim.w.buffish_saved_concealcursor
-    vim.w.buffish_saved_concealcursor = nil
+    wo.conceallevel = w.buffish_saved_conceallevel
+    w.buffish_saved_conceallevel = nil
+
+    wo.concealcursor = w.buffish_saved_concealcursor
+    w.buffish_saved_concealcursor = nil
+
+    wo.wrap = w.buffish_saved_wrap
+    w.buffish_saved_wrap = nil
+
+    api.nvim_clear_autocmds({ group = augroup })
   end,
   group = augroup
 })

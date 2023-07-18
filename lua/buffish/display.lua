@@ -24,7 +24,8 @@ local M = {
         local filename = vim.fn.fnamemodify(buffer.display_name, ":t")
 
         api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {
-          virt_text = {{string.format("  %i", buffer.bufnr), "Comment"}},
+          virt_text = {{ tostring(buffer.bufnr), "Comment"}},
+          virt_text_pos = "right_align",
           end_col = #buffer.name - #buffer.display_name,
           hl_group = "Normal",
           conceal = " "

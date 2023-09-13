@@ -1,6 +1,6 @@
-local fn = vim.fn
 local api = vim.api
 local session = require("buffish.session")
+local shortcuts = require("buffish.shortcuts")
 local get_buffer_handles = require("buffish.handles").get
 
 local ns = api.nvim_create_namespace("buffish-ns")
@@ -19,12 +19,12 @@ local M = {
       if buffer and buffer.display_name and buffer.bufnr then
         session.buf_index[i] = buffer.bufnr
 
-        api.nvim_buf_set_lines(bufnr, i - 1, i, false, { buffer.name })
+        api.nvim_buf_set_lines(bufnr, i - 1, i, false, {buffer.name})
 
         local filename = vim.fn.fnamemodify(buffer.display_name, ":t")
 
         api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {
-          virt_text = {{ tostring(buffer.bufnr), "Comment"}},
+          virt_text = {{tostring(buffer.bufnr), "Comment"}},
           virt_text_pos = "right_align",
           end_col = #buffer.name - #buffer.display_name,
           hl_group = "Normal",
@@ -32,15 +32,20 @@ local M = {
         })
 
         api.nvim_buf_set_extmark(bufnr, ns, i - 1,
-          #buffer.name - #buffer.display_name, {
-            hl_group = "Directory",
-            end_col = #buffer.name - #filename
-          })
+                                 #buffer.name - #buffer.display_name, {
+          hl_group = "Directory",
+          end_col = #buffer.name - #filename
+        })
 
         api.nvim_buf_set_extmark(bufnr, ns, i - 1, #buffer.name - #filename, {
           hl_group = "Identifier",
           end_col = #buffer.name
         })
+
+        local key = shortcuts.get(buffer.bufnr)
+        if key then
+          api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {sign_text = key})
+        end
       end
     end
 

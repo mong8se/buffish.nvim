@@ -1,6 +1,6 @@
 " Title:        Buffish
 " Description:  A buffer chooser in the spirit of dirvish or vinegar
-" Last Change:  8 November 2021
+" Last Change:  13 September 2023
 " Maintainer:   Steven Moazami <https://github.com/mong8se>
 
 " Plugin structure gleaned from here:
@@ -24,3 +24,4 @@ lua require('buffish.init')
 
 " Exposes the plugin's functions for use as commands in Neovim.
 command! -nargs=0 Buffish lua require("buffish").open()
+command! -nargs=? BuffishFollow lua require("buffish").follow_shortcut()

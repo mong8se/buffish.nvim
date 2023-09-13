@@ -38,7 +38,7 @@ api.nvim_create_autocmd("BufWinLeave", {
     wo.wrap = w.buffish_saved_wrap
     w.buffish_saved_wrap = nil
 
-    api.nvim_clear_autocmds({ group = augroup })
+    api.nvim_clear_autocmds({group = augroup})
   end,
   group = augroup
 })
@@ -71,6 +71,20 @@ api.nvim_buf_set_keymap(0, 'n', "dd", '', {
 
 api.nvim_buf_set_keymap(0, 'n', "s", '', {
   callback = actions.split,
+  nowait = true,
+  noremap = true,
+  silent = true
+})
+
+api.nvim_buf_set_keymap(0, 'n', "a", '', {
+  callback = actions.assign_shortcut,
+  nowait = true,
+  noremap = true,
+  silent = true
+})
+
+api.nvim_buf_set_keymap(0, 'n', "r", '', {
+  callback = actions.remove_shortcut,
   nowait = true,
   noremap = true,
   silent = true

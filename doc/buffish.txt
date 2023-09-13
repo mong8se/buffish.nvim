@@ -1,0 +1,58 @@
+*buffish.txt*               A buffer switcher in the spirit of dirvish or vinegar
+Buffish
+
+GPL V3 License Copyright (c) 2023 Steven Moazami
+
+==============================================================================
+CONTENTS                                        *buffish-contents*
+
+    1. Introduction ......... |buffish-introduction|
+    2. Setup ................ |buffish-setup|
+    3. Mappings ............. |buffish-mappings|
+    4. Shortcuts ............ |buffish-shortcuts|
+
+==============================================================================
+INTRODUCTION                                    *buffish-introduction*
+
+A buffer switcher in the spirit of dirvish or vinegar.
+
+Opens a buffer list in the current window, so you can select a buffer to
+display in the same window.
+
+------------------------------------------------------------------------------
+SETUP                                           *buffish-setup*
+
+Map some key to `:Buffish<CR>` or type it.
+
+Or in lua you can map to `require("buffish").open()`
+
+------------------------------------------------------------------------------
+MAPPINGS                                        *buffish-mappings*
+
+<CR>             switch to the buffer
+dd               bd that buffer
+q                close without switching
+s                to open that buffer in a split either horizontally or
+                 vertically, depending on how much space you have
+a                assign a shortcut to the buffer, you'll have to type a
+                 character afterwards to represent it
+r                remove the shortcut from the buffer
+
+Also the line contains the full path so you can also yy to get the full path
+to the file, or use visual mode and yank a portion the normal way, etc.
+
+------------------------------------------------------------------------------
+SHORTCUTS                                       *buffish-shortcuts*
+
+Once you set a shortcut via the keys above, you can run the lua function:
+
+		`require("buffish").follow_shortcut()`
+
+You'll then have to type the shortcut character you saved, and the current
+window will open the buffer. You can also pass the character as a string
+argument to the function, such as `follow_shortcut("m")`.
+
+It's meant to map that function to a key, with or without a specified
+character. You can also map a key to `:BuffishFollow<CR>` if you prefer.
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

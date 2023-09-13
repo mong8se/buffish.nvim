@@ -1,8 +1,7 @@
-local cmd = vim.cmd
-local fn = vim.fn
 local api = vim.api
 
 local session = require("buffish.session")
+local actions = require("buffish.actions")
 local display = require("buffish.display")
 
 local M = {
@@ -16,7 +15,9 @@ local M = {
 
     api.nvim_win_set_buf(0, buffnr)
     display.safely_set_cursor(2)
-  end
+  end,
+
+  follow_shortcut = actions.follow_shortcut
 }
 
 return M

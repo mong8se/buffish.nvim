@@ -6,9 +6,7 @@ end
 
 local extract_filename = function(name, depth)
   -- replace \ with / for windows paths..
-  if package.config:sub(1,1) == '\\' then
-    name = name:gsub("\\", "/")
-  end
+  if package.config:sub(1, 1) == '\\' then name = name:gsub("\\", "/") end
   local parts = vim.split(name, "/", {plain = true, trimempty = true})
 
   local filename = string.format(string.rep("%s", depth + 1, "/"),
@@ -57,10 +55,8 @@ return {
     names = disambiguate(handles, names, 1)
 
     for name, bufl in pairs(names) do
-      for _, bufi in ipairs(bufl) do 
-        if handles[bufi] then
-          handles[bufi].display_name = name
-        end
+      for _, bufi in ipairs(bufl) do
+        if handles[bufi] then handles[bufi].display_name = name end
       end
     end
 

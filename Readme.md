@@ -6,11 +6,13 @@ A buffer switcher in the spirit of [dirvish](https://github.acom/justinmk/vim-di
 Opens a buffer list in the current window, so you can select a buffer to
 display in the same window.
 
-Only tested in nvim v0.7.0 on fedora linux and macos.
-
 ## Usage
 
-Map some key to `:Buffish<CR>` or type it.
+Map some key to `:Buffish<CR>` or to `require("buffish").open()`
+or type it.
+
+If you want to use shortcuts (see below) also map a key to
+`require("buffish.shortcuts").follow()`
 
 ### What do I see?
 
@@ -37,14 +39,26 @@ Mappings in the list:
 3. `q` to close without switching
 4. `s` to open that buffer in a split either horizontally or vertically,
    depending on how much space you have
+5. a to assigned a shortcut to this buffer (next key you type will be
+   shortcut)
+6. r to remove the shortcut from that buffer
 
 Also the line contains the full path so you can also `yy` to get the
 full path to the file, or use visual mode and yank a portion the normal
 way, etc.
 
-### What do I smell?
+#### Shortcuts
 
-Whoever smelt it, dealt it. So you tell me.
+Shortcuts are meant to be mnemonic like `m`, `v`, `c` to go to
+your model, view, and controller respectively, or positional like `q`,
+`w`,`e`, `r`, etc.
+
+Whatever helps you connect your fingers to particular buffers.
+
+Map a key to `require("buffish.shortcuts").follow()`
+
+After you hit the mapped follow key, hit the key for the shortcut that you
+assigned.
 
 ## Aren't there a million of these already?
 
@@ -59,10 +73,3 @@ TODO: Add ~~signs~~ or line number or various things from `:ls` maybe
 TODO: Add configuration?
 
 TODO: Tests?
-
-DONE: `conceallevel `and `concealcursor `are not properly getting set back
-to the original when switching the window
-
-DONE: only 1 level of disambiguation, maybe needs more?
-
-DONE: make disambiguation easier to understand at a glance

@@ -46,11 +46,11 @@ SHORTCUTS                                       *buffish-shortcuts*
 
 Once you set a shortcut via the keys above, you can run the lua function:
 
-		`require("buffish.actions").follow_shortcut()`
+		`require("buffish.shortcuts").follow()`
 
 You'll then have to type the shortcut character you saved, and the current
 window will open the buffer. You can also pass the character as a string
-argument to the function, such as `follow_shortcut("m")`.
+argument to the function, such as `.follow("m")`.
 
 It's meant to map that function to a key, with or without a specified
 character. You can also map a key to `:BuffishFollow<CR>` if you prefer.

@@ -32,10 +32,6 @@ local M = {
     requestRerender()
   end,
 
-  follow_shortcut = function(key)
-    shortcuts.follow(key)
-  end,
-
   select = function() api.nvim_win_set_buf(0, selected_buffer()) end,
 
   rerender = function(details)

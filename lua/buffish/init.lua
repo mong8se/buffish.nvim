@@ -15,7 +15,7 @@ local M = {
 
     api.nvim_win_set_buf(0, buffnr)
     display.safely_set_cursor(2)
-  end,
+  end
 }
 
 return M

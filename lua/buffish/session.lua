@@ -1,3 +1,4 @@
+--- Buffish's own buffer
 local api = vim.api
 
 local bufnr = false

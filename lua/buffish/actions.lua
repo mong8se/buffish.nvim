@@ -24,8 +24,7 @@ local M = {
   delete = function() api.nvim_buf_delete(selected_buffer(), {}) end,
 
   assign_shortcut = function()
-    shortcuts.set(selected_buffer())
-    requestRerender()
+    if shortcuts.set(selected_buffer()) then requestRerender() end
   end,
 
   remove_shortcut = function()

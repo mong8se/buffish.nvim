@@ -8,10 +8,14 @@ local M = {
     local key = fn.getcharstr()
     local old_bufnr = shortcuts[key]
 
-    shortcuts[key] = bufnr
-    b[bufnr].buffish_shortcut = key
+    if not old_bufnr or old_bufnr ~= bufnr then
+      shortcuts[key] = bufnr
+      b[bufnr].buffish_shortcut = key
 
-    if old_bufnr then b[old_bufnr].buffish_shortcut = nil end
+      if old_bufnr then b[old_bufnr].buffish_shortcut = nil end
+
+      return true
+    end
   end,
 
   get = function(bufnr) return b[bufnr].buffish_shortcut end,

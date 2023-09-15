@@ -17,13 +17,15 @@ local M = {
     for i, buffer in ipairs(handles) do
       -- if not api.nvim_buf_is_valid(buffer.bufnr) then break end
       if buffer and buffer.display_name and buffer.bufnr then
+        local row = i - 1
+
         session.buf_index[i] = buffer.bufnr
 
-        api.nvim_buf_set_lines(bufnr, i - 1, i, false, {buffer.name})
+        api.nvim_buf_set_lines(bufnr, row, i, false, {buffer.name})
 
         local filename = vim.fn.fnamemodify(buffer.display_name, ":t")
 
-        api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {
+        api.nvim_buf_set_extmark(bufnr, ns, row, 0, {
           virt_text = {{tostring(buffer.bufnr), "Comment"}},
           virt_text_pos = "right_align",
           end_col = #buffer.name - #buffer.display_name,
@@ -31,20 +33,20 @@ local M = {
           conceal = " "
         })
 
-        api.nvim_buf_set_extmark(bufnr, ns, i - 1,
+        api.nvim_buf_set_extmark(bufnr, ns, row,
                                  #buffer.name - #buffer.display_name, {
           hl_group = "Directory",
           end_col = #buffer.name - #filename
         })
 
-        api.nvim_buf_set_extmark(bufnr, ns, i - 1, #buffer.name - #filename, {
+        api.nvim_buf_set_extmark(bufnr, ns, row, #buffer.name - #filename, {
           hl_group = "Identifier",
           end_col = #buffer.name
         })
 
         local key = shortcuts.get(buffer.bufnr)
         if key then
-          api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {sign_text = key})
+          api.nvim_buf_set_extmark(bufnr, ns, row, 0, {sign_text = key})
         end
       end
     end

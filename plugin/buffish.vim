@@ -24,4 +24,4 @@ lua require('buffish.init')
 
 " Exposes the plugin's functions for use as commands in Neovim.
 command! -nargs=0 Buffish lua require("buffish").open()
-command! -nargs=? BuffishFollow lua require("buffish").follow_shortcut()
+command! -nargs=? BuffishFollow lua require("buffish.actions").follow_shortcut()

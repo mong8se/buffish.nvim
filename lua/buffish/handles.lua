@@ -1,58 +1,56 @@
-local safely_insert = function(list, entry)
-  list = list or {}
-  table.insert(list, entry)
-  return list
+local extract_filename = function(name, depth)
+  local parts = vim.split(vim.fs.normalize(name), "/",
+                          {plain = true, trimempty = true})
+
+  return table.concat(parts, "/", #parts - depth)
 end
 
-local extract_filename = function(name, depth)
-  -- replace \ with / for windows paths..
-  if package.config:sub(1, 1) == '\\' then name = name:gsub("\\", "/") end
-  local parts = vim.split(name, "/", {plain = true, trimempty = true})
+local add_name_to_index_mapping = function(handle, list, bufi, depth)
+  local name = extract_filename(handle.name, depth)
 
-  local filename = string.format(string.rep("%s", depth + 1, "/"),
-                                 unpack(parts, #parts - depth))
+  list[name] = list[name] or {}
+  table.insert(list[name], bufi)
 
-  return filename
+  return list
 end
 
 local disambiguate
 disambiguate = function(handles, names, depth)
-  local matches_found = false
+  depth = depth or 0
+
+  if not names then
+    names = {}
+    for i, handle in ipairs(handles) do
+      add_name_to_index_mapping(handle, names, i, depth)
+    end
+  end
+
+  local collisions = {}
   local results = {}
+
+  depth = depth + 1
 
   for name, bufl in pairs(names) do
     if #bufl < 2 then
       results[name] = names[name]
     else
-      matches_found = true
       for _, bufi in ipairs(bufl) do
-        local filename = extract_filename(handles[bufi].name, depth)
-        results[filename] = safely_insert(results[filename], bufi)
+        add_name_to_index_mapping(handles[bufi], collisions, bufi, depth)
       end
     end
   end
 
-  if matches_found then
-    return disambiguate(handles, results, depth + 1)
-  else
-    return results
-  end
+  if vim.tbl_isempty(collisions) then return results end
+
+  return vim.tbl_extend("error", results,
+                        disambiguate(handles, collisions, depth))
 end
 
 return {
   get = function()
-    local handles = {}
-    local names = {}
-
-    for i, buffer in ipairs(vim.fn.getbufinfo({buflisted = 1})) do
-      if #buffer.name > 0 then
-        table.insert(handles, buffer)
-        local filename = extract_filename(buffer.name, 0)
-        names[filename] = safely_insert(names[filename], i)
-      end
-    end
-
-    names = disambiguate(handles, names, 1)
+    local handles = vim.tbl_filter(function(buffer) return #buffer.name > 0 end,
+                                   vim.fn.getbufinfo({buflisted = 1}))
+    local names = disambiguate(handles)
 
     for name, bufl in pairs(names) do
       for _, bufi in ipairs(bufl) do

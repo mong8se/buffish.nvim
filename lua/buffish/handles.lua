@@ -21,7 +21,9 @@ disambiguate = function(handles, names, depth)
   if not names then
     names = {}
     for i, handle in ipairs(handles) do
-      add_name_to_index_mapping(handle, names, i, depth)
+      if #handle.name > 0 then
+        add_name_to_index_mapping(handle, names, i, depth)
+      end
     end
   end
 
@@ -48,8 +50,7 @@ end
 
 return {
   get = function()
-    local handles = vim.tbl_filter(function(buffer) return #buffer.name > 0 end,
-                                   vim.fn.getbufinfo({buflisted = 1}))
+    local handles = vim.fn.getbufinfo({buflisted = 1})
     local names = disambiguate(handles)
 
     for name, bufl in pairs(names) do

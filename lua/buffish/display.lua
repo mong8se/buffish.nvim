@@ -16,32 +16,40 @@ local M = {
 
     for i, buffer in ipairs(handles) do
       -- if not api.nvim_buf_is_valid(buffer.bufnr) then break end
-      if buffer and buffer.display_name and buffer.bufnr then
+      if buffer and buffer.bufnr then
         local row = i - 1
 
         session.buf_index[i] = buffer.bufnr
 
-        api.nvim_buf_set_lines(bufnr, row, i, false, {buffer.name})
+        if #buffer.name > 0 then
+          api.nvim_buf_set_lines(bufnr, row, i, false, {buffer.name})
 
-        local filename = vim.fn.fnamemodify(buffer.display_name, ":t")
+          local filename = vim.fs.basename(buffer.display_name)
+
+          api.nvim_buf_set_extmark(bufnr, ns, row, 0, {
+            end_col = #buffer.name - #buffer.display_name,
+            hl_group = "Normal",
+            conceal = " "
+          })
+
+          api.nvim_buf_set_extmark(bufnr, ns, row,
+                                   #buffer.name - #buffer.display_name, {
+            hl_group = "Directory",
+            end_col = #buffer.name - #filename
+          })
+
+          api.nvim_buf_set_extmark(bufnr, ns, row, #buffer.name - #filename, {
+            hl_group = "Identifier",
+            end_col = #buffer.name
+          })
+
+        else
+          api.nvim_buf_set_lines(bufnr, row, i, false, {"[No Name]"})
+        end
 
         api.nvim_buf_set_extmark(bufnr, ns, row, 0, {
           virt_text = {{tostring(buffer.bufnr), "Comment"}},
-          virt_text_pos = "right_align",
-          end_col = #buffer.name - #buffer.display_name,
-          hl_group = "Normal",
-          conceal = " "
-        })
-
-        api.nvim_buf_set_extmark(bufnr, ns, row,
-                                 #buffer.name - #buffer.display_name, {
-          hl_group = "Directory",
-          end_col = #buffer.name - #filename
-        })
-
-        api.nvim_buf_set_extmark(bufnr, ns, row, #buffer.name - #filename, {
-          hl_group = "Identifier",
-          end_col = #buffer.name
+          virt_text_pos = "right_align"
         })
 
         local key = shortcuts.get(buffer.bufnr)
@@ -55,10 +63,14 @@ local M = {
     api.nvim_buf_set_option(bufnr, 'modifiable', false)
   end,
 
-  safely_set_cursor = function(loc)
-    api.nvim_win_set_cursor(0, {
-      math.min(api.nvim_buf_line_count(session.get_bufnr()), loc), 0
-    })
+  safely_set_cursor = function(row)
+    local win = vim.fn.getwininfo(vim.fn.win_getid())[1]
+
+    if win.bufnr == session.get_bufnr() then
+      api.nvim_win_set_cursor(win.winid, {
+        math.min(api.nvim_buf_line_count(win.bufnr), row), 0
+      })
+    end
   end
 }
 

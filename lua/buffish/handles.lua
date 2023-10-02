@@ -5,13 +5,20 @@ local extract_filename = function(name, depth)
   return table.concat(parts, "/", #parts - depth)
 end
 
-local add_name_to_index_mapping = function(handle, list, bufi, depth)
-  local name = extract_filename(handle.name, depth)
+local new_map = function(depth)
+  local mappings = {}
 
-  list[name] = list[name] or {}
-  table.insert(list[name], bufi)
+  setmetatable(mappings, {
+    __newindex = function(self, handle, bufi)
+      local name = extract_filename(handle.name, depth)
 
-  return list
+      if not self[name] then rawset(self, name, {}) end
+
+      table.insert(self[name], bufi)
+    end
+  })
+
+  return mappings
 end
 
 local disambiguate
@@ -19,26 +26,23 @@ disambiguate = function(handles, names, depth)
   depth = depth or 0
 
   if not names then
-    names = {}
+    names = new_map(depth)
     for i, handle in ipairs(handles) do
-      if #handle.name > 0 then
-        add_name_to_index_mapping(handle, names, i, depth)
-      end
+      if #handle.name > 0 then names[handle] = i end
     end
   end
 
-  local collisions = {}
-  local results = {}
-
   depth = depth + 1
 
+  local results = {}
+  local collisions = new_map(depth)
+
   for name, bufl in pairs(names) do
+    vim.print(name, bufl)
     if #bufl < 2 then
       results[name] = names[name]
     else
-      for _, bufi in ipairs(bufl) do
-        add_name_to_index_mapping(handles[bufi], collisions, bufi, depth)
-      end
+      for _, bufi in ipairs(bufl) do collisions[handles[bufi]] = bufi end
     end
   end
 

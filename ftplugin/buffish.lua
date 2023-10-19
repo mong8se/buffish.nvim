@@ -18,7 +18,7 @@ api.nvim_create_autocmd("BufWinEnter", {
     wo.conceallevel = 1
 
     w.buffish_saved_concealcursor = wo.concealcursor
-    wo.concealcursor = "n"
+    wo.concealcursor = "nic"
 
     w.buffish_saved_wrap = wo.wrap
     wo.wrap = false

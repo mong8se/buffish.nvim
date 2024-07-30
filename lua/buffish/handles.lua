@@ -5,62 +5,64 @@ local extract_filename = function(name, depth)
   return table.concat(parts, "/", #parts - depth)
 end
 
-local new_map = function(depth)
-  local mappings = {}
+local NameToIndexesMap = {
+  new = function(self, depth)
+    local properties = {mappings = {}, depth = depth}
 
-  setmetatable(mappings, {
-    __newindex = function(self, handle, bufi)
-      local name = extract_filename(handle.name, depth)
+    setmetatable(properties, self)
+    self.__index = self
 
-      if not self[name] then rawset(self, name, {}) end
+    return properties
+  end,
+  add = function(self, handle, index)
+    local name = extract_filename(handle.name, self.depth)
 
-      table.insert(self[name], bufi)
-    end
-  })
+    if not self.mappings[name] then rawset(self.mappings, name, {}) end
 
-  return mappings
-end
+    table.insert(self.mappings[name], index)
+  end,
+  is_empty = function(self) return vim.tbl_isempty(self.mappings) end,
+  iterate = function(self) return pairs(self.mappings) end
+}
 
 local disambiguate
 disambiguate = function(handles, names, depth)
-  depth = depth or 0
-
-  if not names then
-    names = new_map(depth)
-    for i, handle in ipairs(handles) do
-      if #handle.name > 0 then names[handle] = i end
-    end
-  end
-
-  depth = depth + 1
-
   local results = {}
-  local collisions = new_map(depth)
+  local collisions = NameToIndexesMap:new(depth)
 
-  for name, bufl in pairs(names) do
-    vim.print(name, bufl)
-    if #bufl < 2 then
-      results[name] = names[name]
+  for name, index_list in names:iterate() do
+    if #index_list < 2 then
+      results[name] = table.remove(index_list)
     else
-      for _, bufi in ipairs(bufl) do collisions[handles[bufi]] = bufi end
+      for _, index in ipairs(index_list) do
+        collisions:add(handles[index], index)
+      end
     end
   end
 
-  if vim.tbl_isempty(collisions) then return results end
+  if collisions:is_empty() then return results end
 
   return vim.tbl_extend("error", results,
-                        disambiguate(handles, collisions, depth))
+                        disambiguate(handles, collisions, depth + 1))
+end
+
+local start_disambiguate = function(handles)
+  local names = NameToIndexesMap:new(0)
+
+  for i, handle in ipairs(handles) do
+    if #handle.name > 0 then names:add(handle, i) end
+  end
+
+  return disambiguate(handles, names, 0)
 end
 
 return {
   get = function()
     local handles = vim.fn.getbufinfo({buflisted = 1})
-    local names = disambiguate(handles)
+    local names = start_disambiguate(handles)
 
-    for name, bufl in pairs(names) do
-      for _, bufi in ipairs(bufl) do
-        if handles[bufi] then handles[bufi].display_name = name end
-      end
+    for name, index in pairs(names) do
+      if handles[index] then handles[index].display_name = name end
     end
 
     table.sort(handles, function(a, b)

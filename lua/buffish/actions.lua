@@ -1,8 +1,8 @@
-local fn = vim.fn
-local api = vim.api
 local display = require("buffish.display")
 local session = require("buffish.session")
 local shortcuts = require("buffish.shortcuts")
+local fn = vim.fn
+local api = vim.api
 
 local current_line_number = function() return api.nvim_win_get_cursor(0)[1] end
 

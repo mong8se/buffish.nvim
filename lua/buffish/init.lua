@@ -1,8 +1,7 @@
-local api = vim.api
-
 local session = require("buffish.session")
-local actions = require("buffish.actions")
 local display = require("buffish.display")
+
+local api = vim.api
 
 local M = {
   open = function()

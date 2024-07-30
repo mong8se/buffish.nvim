@@ -1,6 +1,7 @@
 local fn = vim.fn
 local b = vim.b
 local api = vim.api
+
 local shortcuts = {}
 
 local M = {

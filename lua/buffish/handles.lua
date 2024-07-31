@@ -6,62 +6,60 @@ local extract_filename = function(name, depth)
 end
 
 local NameToIndexesMap = {
-  new = function(self, depth)
-    local properties = {mappings = {}, depth = depth}
+  new = function(self, opts)
+    opts = opts or {}
+    local properties = {mappings = {}, depth = opts.depth or 0}
+
+    if opts.handles then self.handles = opts.handles end
 
     setmetatable(properties, self)
     self.__index = self
 
     return properties
   end,
-  add = function(self, handle, index)
-    local name = extract_filename(handle.name, self.depth)
+  add = function(self, index)
+    local name = extract_filename(self.handles[index].name, self.depth)
 
     if not self.mappings[name] then rawset(self.mappings, name, {}) end
 
     table.insert(self.mappings[name], index)
   end,
   is_empty = function(self) return vim.tbl_isempty(self.mappings) end,
-  iterate = function(self) return pairs(self.mappings) end
+  iterate = function(self) return pairs(self.mappings) end,
+  new_next_level = function(self) return self:new({depth = self.depth + 1}) end
 }
 
 local disambiguate
-disambiguate = function(handles, names, depth)
+disambiguate = function(names)
   local results = {}
-  local collisions = NameToIndexesMap:new(depth)
+  local collisions = names:new_next_level()
 
   for name, index_list in names:iterate() do
     if #index_list < 2 then
       results[name] = table.remove(index_list)
     else
-      for _, index in ipairs(index_list) do
-        collisions:add(handles[index], index)
-      end
+      for _, index in ipairs(index_list) do collisions:add(index) end
     end
   end
 
   if collisions:is_empty() then return results end
 
-  return vim.tbl_extend("error", results,
-                        disambiguate(handles, collisions, depth + 1))
+  return vim.tbl_extend("error", results, disambiguate(collisions))
 end
 
-local start_disambiguate = function(handles)
-  local names = NameToIndexesMap:new(0)
+local get_disambiguated_names = function(handles)
+  local names = NameToIndexesMap:new({handles = handles})
 
-  for i, handle in ipairs(handles) do
-    if #handle.name > 0 then names:add(handle, i) end
-  end
+  for i, handle in ipairs(handles) do if #handle.name > 0 then names:add(i) end end
 
-  return disambiguate(handles, names, 0)
+  return disambiguate(names)
 end
 
 return {
   get = function()
     local handles = vim.fn.getbufinfo({buflisted = 1})
-    local names = start_disambiguate(handles)
 
-    for name, index in pairs(names) do
+    for name, index in pairs(get_disambiguated_names(handles)) do
       if handles[index] then handles[index].display_name = name end
     end
 

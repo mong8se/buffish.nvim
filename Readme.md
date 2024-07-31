@@ -22,7 +22,10 @@ Why only show the filename? Because it's quicker for visual
 identification.
 
 If more than one filename matches, then it will include as much of the
-path that is necessary to make them unique.
+path that is necessary to make them unique. For example, if you have
+`this/thing.txt` and `long/path/that/thing.txt` open, it will show
+`this/thing.txt` and `that/thing.txt`. The full path is still available
+if you switch to visual mode, or yank the line.
 
 It's sorted with the most recently used file at the top (which is the one you're leaving) to
 least recently used at the bottom.

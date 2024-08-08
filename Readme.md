@@ -6,6 +6,9 @@ A buffer switcher in the spirit of [dirvish](https://github.acom/justinmk/vim-di
 Opens a buffer list in the current window, so you can select a buffer to
 display in the same window.
 
+As you switch buffers it sets the alternate buffer to the previous
+buffer so you can always swap between the last to buffers with `c-^`.
+
 ## Usage
 
 Map some key to `:Buffish<CR>` or to `require("buffish").open()`

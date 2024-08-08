@@ -1,6 +1,6 @@
 " Title:        Buffish
 " Description:  A buffer chooser in the spirit of dirvish or vinegar
-" Last Change:  13 September 2023
+" Last Change:  08 August 2024
 " Maintainer:   Steven Moazami <https://github.com/mong8se>
 
 " Plugin structure gleaned from here:

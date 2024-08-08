@@ -32,7 +32,7 @@ local M = {
     requestRerender()
   end,
 
-  select = function() api.nvim_win_set_buf(0, selected_buffer()) end,
+  select = function() session.select_buf(selected_buffer()) end,
 
   rerender = function(details)
     -- Meant to be called by BufDelete and BufAdd events

@@ -42,7 +42,9 @@ M = {
       M.restore_prev_buf()
     else
       loadBufferAndKeepAlt(selected_bufnr)
-      if api.nvim_buf_is_valid(prev_bufnr) then cmd.balt(prev_name) end
+      if #prev_name > 0 and api.nvim_buf_is_valid(prev_bufnr) then
+        cmd.balt(prev_name)
+      end
     end
   end
 }

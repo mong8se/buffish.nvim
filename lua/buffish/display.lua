@@ -1,66 +1,55 @@
 local api = vim.api
 local session = require("buffish.session")
 local shortcuts = require("buffish.shortcuts")
-local get_buffer_handles = require("buffish.handles").get
 
 local ns = api.nvim_create_namespace("buffish-ns")
 
-local M = {
+local M
+M = {
   render = function()
-    local handles = get_buffer_handles()
+    local handles = session.get_buffer_handles()
     local bufnr = session.get_bufnr()
-    session.buf_index = {}
 
-    api.nvim_buf_set_option(bufnr, 'modifiable', true)
-    api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
+    vim.bo[bufnr].modifiable = true
+    api.nvim_buf_set_lines(bufnr, 0, -1, false,
+                           vim.iter(handles):map(function(buffer)
+      return #buffer.name > 0 and buffer.name or " [No Name]"
+    end):totable())
 
     for i, buffer in ipairs(handles) do
-      -- if not api.nvim_buf_is_valid(buffer.bufnr) then break end
-      if buffer and buffer.bufnr then
-        local row = i - 1
+      local set_extmark = function(col, opts)
+        api.nvim_buf_set_extmark(bufnr, ns, i - 1, col, opts)
+      end
 
-        session.buf_index[i] = buffer.bufnr
+      if buffer.display_name then
+        local file_name = vim.fs.basename(buffer.display_name)
 
-        if #buffer.name > 0 then
-          api.nvim_buf_set_lines(bufnr, row, i, false, {buffer.name})
-
-          local filename = vim.fs.basename(buffer.display_name)
-
-          api.nvim_buf_set_extmark(bufnr, ns, row, 0, {
-            end_col = #buffer.name - #buffer.display_name,
-            hl_group = "Normal",
-            conceal = " "
-          })
-
-          api.nvim_buf_set_extmark(bufnr, ns, row,
-                                   #buffer.name - #buffer.display_name, {
-            hl_group = "Directory",
-            end_col = #buffer.name - #filename
-          })
-
-          api.nvim_buf_set_extmark(bufnr, ns, row, #buffer.name - #filename, {
-            hl_group = "Identifier",
-            end_col = #buffer.name
-          })
-
-        else
-          api.nvim_buf_set_lines(bufnr, row, i, false, {"[No Name]"})
-        end
-
-        api.nvim_buf_set_extmark(bufnr, ns, row, 0, {
-          virt_text = {{tostring(buffer.bufnr), "Comment"}},
-          virt_text_pos = "right_align"
+        set_extmark(0, {
+          hl_group = "Normal",
+          end_col = #buffer.name - #buffer.display_name,
+          conceal = buffer.changed > 0 and "+" or " "
         })
 
-        local key = shortcuts.get(buffer.bufnr)
-        if key then
-          api.nvim_buf_set_extmark(bufnr, ns, row, 0, {sign_text = key})
-        end
+        set_extmark(#buffer.name - #buffer.display_name, {
+          hl_group = "Directory",
+          end_col = #buffer.name - #file_name
+        })
+
+        set_extmark(#buffer.name - #file_name,
+                    {hl_group = "Identifier", end_col = #buffer.name})
       end
+
+      set_extmark(0, {
+        virt_text = {{tostring(buffer.bufnr), "Comment"}},
+        virt_text_pos = "right_align"
+      })
+
+      local key = shortcuts.get(buffer.bufnr)
+      if key then set_extmark(0, {sign_text = key}) end
     end
 
-    api.nvim_buf_set_option(bufnr, 'modified', false)
-    api.nvim_buf_set_option(bufnr, 'modifiable', false)
+    vim.bo[bufnr].modified = false
+    vim.bo[bufnr].modifiable = false
   end,
 
   safely_set_cursor = function(row)
@@ -71,6 +60,14 @@ local M = {
         math.min(api.nvim_buf_line_count(win.bufnr), row), 0
       })
     end
+  end,
+
+  rerender = function()
+    local old_line = api.nvim_win_get_cursor(0)[1]
+    vim.schedule(function()
+      M.render()
+      M.safely_set_cursor(old_line)
+    end)
   end
 }
 

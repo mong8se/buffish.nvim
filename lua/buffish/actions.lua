@@ -4,48 +4,22 @@ local shortcuts = require("buffish.shortcuts")
 local fn = vim.fn
 local api = vim.api
 
-local current_line_number = function() return api.nvim_win_get_cursor(0)[1] end
-
-local selected_buffer = function()
-  return session.buf_index[current_line_number()]
-end
-
-local requestRerender = function()
-  local old_line = current_line_number()
-  vim.schedule(function()
-    display.render()
-    display.safely_set_cursor(old_line)
-  end)
-end
 
 local M = {
   quit = function() session.restore_prev_buf() end,
 
-  delete = function() api.nvim_buf_delete(selected_buffer(), {}) end,
+  delete = function() api.nvim_buf_delete(session.get_selected_buffer(), {}) end,
 
   assign_shortcut = function()
-    if shortcuts.set(selected_buffer()) then requestRerender() end
+    if shortcuts.set(session.get_selected_buffer()) then display.rerender() end
   end,
 
   remove_shortcut = function()
-    shortcuts.remove(selected_buffer())
-    requestRerender()
+    shortcuts.remove(session.get_selected_buffer())
+    display.rerender()
   end,
 
-  select = function() session.select_buf(selected_buffer()) end,
-
-  rerender = function(details)
-    -- Meant to be called by BufDelete and BufAdd events
-    -- If the buffer that triggered the event is the buffish
-    -- buffer itself or an unlisted buffer, we don't need
-    -- to rerender
-    if details.buf == session.get_bufnr() or
-        api.nvim_buf_get_option(details.buf, 'buflisted') == false then
-      return
-    end
-
-    requestRerender()
-  end,
+  select = session.select_buf,
 
   split = function()
     local which = "split"

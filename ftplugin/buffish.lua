@@ -3,13 +3,14 @@ local actions = require("buffish.actions")
 local api = vim.api
 local w = vim.w
 local wo = vim.wo
+local bo = vim.bo
 
-api.nvim_buf_set_option(0, 'buflisted', false)
-api.nvim_buf_set_option(0, 'bufhidden', 'delete')
-api.nvim_buf_set_option(0, 'buftype', 'nofile')
-api.nvim_buf_set_option(0, 'swapfile', false)
+bo.buflisted = false
+bo.bufhidden = 'wipe'
+bo.buftype = 'nofile'
+bo.swapfile = false
 
-local augroup = vim.api.nvim_create_augroup('buffish-au', {clear = true})
+local augroup = api.nvim_create_augroup('buffish-au', {clear = true})
 
 api.nvim_create_autocmd("BufWinEnter", {
   buffer = 0,
@@ -37,14 +38,7 @@ api.nvim_create_autocmd("BufWinLeave", {
 
     wo.wrap = w.buffish_saved_wrap
     w.buffish_saved_wrap = nil
-
-    api.nvim_clear_autocmds({group = augroup})
   end,
-  group = augroup
-})
-
-api.nvim_create_autocmd({"BufDelete", "BufAdd"}, {
-  callback = function(details) actions.rerender(details) end,
   group = augroup
 })
 

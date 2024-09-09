@@ -36,6 +36,8 @@ least recently used at the bottom.
 It automatically starts with the cursor on the 2nd line (if there is one),
 so you can easily switch back and forth between two buffers.
 
+The buffer number will be right aligned if you need it.
+
 ### What do I push?
 
 Mappings in the list:

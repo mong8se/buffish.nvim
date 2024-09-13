@@ -1,25 +1,27 @@
-local display = require("buffish.display")
 local session = require("buffish.session")
 local shortcuts = require("buffish.shortcuts")
 local fn = vim.fn
 local api = vim.api
 
+local get_selected_buffer = function()
+  return vim.b.buffish_index[api.nvim_win_get_cursor(0)[1]]
+end
 
 local M = {
   quit = function() session.restore_prev_buf() end,
 
-  delete = function() api.nvim_buf_delete(session.get_selected_buffer(), {}) end,
+  delete = function() api.nvim_buf_delete(get_selected_buffer(), {}) end,
 
   assign_shortcut = function()
-    if shortcuts.set(session.get_selected_buffer()) then display.rerender() end
+    if shortcuts.set(get_selected_buffer()) then session.rerender() end
   end,
 
   remove_shortcut = function()
-    shortcuts.remove(session.get_selected_buffer())
-    display.rerender()
+    shortcuts.remove(get_selected_buffer())
+    session.rerender()
   end,
 
-  select = session.select_buf,
+  select = function() session.select_buf(get_selected_buffer()) end,
 
   split = function()
     local which = "split"

@@ -1,14 +1,15 @@
-local api = vim.api
-local session = require("buffish.session")
 local shortcuts = require("buffish.shortcuts")
+local get_handles = require("buffish.handles").get
+
+local api = vim.api
 
 local ns = api.nvim_create_namespace("buffish-ns")
 
 local M
 M = {
-  render = function()
-    local handles = session.get_buffer_handles()
-    local bufnr = session.get_bufnr()
+  render = function(bufnr)
+    local handles = get_handles()
+    local buffish_index = {}
 
     vim.bo[bufnr].modifiable = true
     api.nvim_buf_set_lines(bufnr, 0, -1, false,
@@ -17,6 +18,8 @@ M = {
     end):totable())
 
     for i, buffer in ipairs(handles) do
+      table.insert(buffish_index, buffer.bufnr)
+
       local set_extmark = function(col, opts)
         api.nvim_buf_set_extmark(bufnr, ns, i - 1, col, opts)
       end
@@ -48,26 +51,9 @@ M = {
       if key then set_extmark(0, {sign_text = key}) end
     end
 
+    vim.b[bufnr].buffish_index = buffish_index
     vim.bo[bufnr].modified = false
     vim.bo[bufnr].modifiable = false
-  end,
-
-  safely_set_cursor = function(row)
-    local win = vim.fn.getwininfo(vim.fn.win_getid())[1]
-
-    if win.bufnr == session.get_bufnr() then
-      api.nvim_win_set_cursor(win.winid, {
-        math.min(api.nvim_buf_line_count(win.bufnr), row), 0
-      })
-    end
-  end,
-
-  rerender = function()
-    local old_line = api.nvim_win_get_cursor(0)[1]
-    vim.schedule(function()
-      M.render()
-      M.safely_set_cursor(old_line)
-    end)
   end
 }
 

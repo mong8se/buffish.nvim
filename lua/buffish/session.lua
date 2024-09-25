@@ -3,7 +3,7 @@ local display = require("buffish.display")
 local api = vim.api
 local cmd = vim.cmd
 
-local M
+local M = {}
 local bufnr = false
 local prev_bufnr = false
 local prev_name = ""
@@ -48,40 +48,38 @@ local safely_set_cursor = function(row)
   end
 end
 
-M = {
-  open_session_buffer = function()
-    prev_bufnr = api.nvim_win_get_buf(0)
-    prev_name = api.nvim_buf_get_name(0)
-    load_buffer_and_keep_alt(create_buffer())
-    safely_set_cursor(2)
-  end,
+M.open_session_buffer = function()
+  prev_bufnr = api.nvim_win_get_buf(0)
+  prev_name = api.nvim_buf_get_name(0)
+  load_buffer_and_keep_alt(create_buffer())
+  safely_set_cursor(2)
+end
 
-  restore_prev_buf = function()
-    if api.nvim_buf_is_valid(prev_bufnr) then
-      load_buffer_and_keep_alt(prev_bufnr)
-    else
-      api.nvim_buf_delete(0, {})
-    end
-  end,
-
-  select_buf = function(selected_bufnr)
-    if prev_bufnr == selected_bufnr then
-      M.restore_prev_buf()
-    else
-      load_buffer_and_keep_alt(selected_bufnr)
-      if #prev_name > 0 and api.nvim_buf_is_valid(prev_bufnr) then
-        cmd.balt(prev_name)
-      end
-    end
-  end,
-
-  rerender = function()
-    local old_line = api.nvim_win_get_cursor(0)[1]
-    vim.schedule(function()
-      display.render(bufnr)
-      safely_set_cursor(old_line)
-    end)
+M.restore_prev_buf = function()
+  if api.nvim_buf_is_valid(prev_bufnr) then
+    load_buffer_and_keep_alt(prev_bufnr)
+  else
+    api.nvim_buf_delete(0, {})
   end
-}
+end
+
+M.select_buf = function(selected_bufnr)
+  if prev_bufnr == selected_bufnr then
+    M.restore_prev_buf()
+  else
+    load_buffer_and_keep_alt(selected_bufnr)
+    if #prev_name > 0 and api.nvim_buf_is_valid(prev_bufnr) then
+      cmd.balt(prev_name)
+    end
+  end
+end
+
+M.rerender = function()
+  local old_line = api.nvim_win_get_cursor(0)[1]
+  vim.schedule(function()
+    display.render(bufnr)
+    safely_set_cursor(old_line)
+  end)
+end
 
 return M

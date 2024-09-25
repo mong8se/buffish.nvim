@@ -5,8 +5,7 @@ local api = vim.api
 
 local ns = api.nvim_create_namespace("buffish-ns")
 
-local M
-M = {
+return {
   render = function(bufnr)
     local handles = get_handles()
     local buffish_index = {}
@@ -56,5 +55,3 @@ M = {
     vim.bo[bufnr].modifiable = false
   end
 }
-
-return M

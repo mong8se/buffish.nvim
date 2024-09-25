@@ -55,7 +55,7 @@ local get_disambiguated_names = function(handles)
   return disambiguate(names)
 end
 
-local M = {
+return {
   get = function()
     local handles = vim.fn.getbufinfo({buflisted = 1})
 
@@ -74,5 +74,3 @@ local M = {
     return handles
   end
 }
-
-return M

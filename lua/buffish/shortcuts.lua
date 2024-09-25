@@ -4,7 +4,7 @@ local api = vim.api
 
 local shortcuts = {}
 
-local M = {
+return {
   set = function(bufnr)
     local key = fn.getcharstr()
 
@@ -44,5 +44,3 @@ local M = {
     b[bufnr].buffish_shortcut = nil
   end
 }
-
-return M

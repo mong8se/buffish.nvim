@@ -83,3 +83,10 @@ api.nvim_buf_set_keymap(0, 'n', "r", '', {
   noremap = true,
   silent = true
 })
+
+api.nvim_buf_set_keymap(0, 'n', "-", '', {
+  callback = actions.goto_parent_directory,
+  nowait = true,
+  noremap = true,
+  silent = true
+})

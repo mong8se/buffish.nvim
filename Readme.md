@@ -47,9 +47,10 @@ Mappings in the list:
 3. `q` to close without switching
 4. `s` to open that buffer in a split either horizontally or vertically,
    depending on how much space you have
-5. `a `to assigned a shortcut to this buffer (next key you type will be
+5. `-` to go to the directory containing the file
+6. `a `to assigned a shortcut to this buffer (next key you type will be
    shortcut)
-6. `r `to remove the shortcut from that buffer
+7. `r `to remove the shortcut from that buffer
 
 Also the line contains the full path so you can also `yy` to get the
 full path to the file, or use visual mode and yank a portion the normal

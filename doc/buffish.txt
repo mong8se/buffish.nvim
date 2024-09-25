@@ -34,6 +34,7 @@ dd               bd that buffer
 q                close without switching
 s                to open that buffer in a split either horizontally or
                  vertically, depending on how much space you have
+-                to go to the directory containing the file
 a                assign a shortcut to the buffer, you'll have to type a
                  character afterwards to represent it
 r                remove the shortcut from the buffer

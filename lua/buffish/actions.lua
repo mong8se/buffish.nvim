@@ -7,7 +7,7 @@ local get_selected_buffer = function()
   return vim.b.buffish_index[api.nvim_win_get_cursor(0)[1]]
 end
 
-local M = {
+return {
   quit = function() session.restore_prev_buf() end,
 
   delete = function() api.nvim_buf_delete(get_selected_buffer(), {}) end,
@@ -31,7 +31,9 @@ local M = {
     local line = api.nvim_win_get_cursor(0)[1]
     vim.cmd(string.format("%s %s", which,
                           api.nvim_buf_get_lines(0, line - 1, line, true)[1]))
+  end,
+
+  goto_parent_directory = function()
+    vim.cmd.edit(vim.fs.dirname(api.nvim_buf_get_name(get_selected_buffer())))
   end
 }
-
-return M

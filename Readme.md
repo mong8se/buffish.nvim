@@ -7,7 +7,7 @@ Opens a buffer list in the current window, so you can select a buffer to
 display in the same window.
 
 As you switch buffers it sets the alternate buffer to the previous
-buffer so you can always swap between the last to buffers with `c-^`.
+buffer so you can always swap between the last two buffers with `c-^`.
 
 ## Usage
 
@@ -30,13 +30,17 @@ path that is necessary to make them unique. For example, if you have
 `this/thing.txt` and `that/thing.txt`. The full path is still available
 if you switch to visual mode, or yank the line.
 
-It's sorted with the most recently used file at the top (which is the one you're leaving) to
-least recently used at the bottom.
+It's sorted with the most recently used file at the top (which is the one you're
+leaving) to least recently used at the bottom.
 
 It automatically starts with the cursor on the 2nd line (if there is one),
-so you can easily switch back and forth between two buffers.
+as another way to easily switch back and forth between two buffers.
 
 The buffer number will be right aligned if you need it.
+
+#### Icons
+
+If you have [mini.icons](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-icons.md) installed and set up it will automatically show icons.
 
 ### What do I push?
 
@@ -48,9 +52,9 @@ Mappings in the list:
 4. `s` to open that buffer in a split either horizontally or vertically,
    depending on how much space you have
 5. `-` to go to the directory containing the file
-6. `a `to assigned a shortcut to this buffer (next key you type will be
+6. `a` to add a shortcut to this buffer (next key you type will be
    shortcut)
-7. `r `to remove the shortcut from that buffer
+7. `r` to remove the shortcut from that buffer
 
 Also the line contains the full path so you can also `yy` to get the
 full path to the file, or use visual mode and yank a portion the normal

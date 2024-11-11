@@ -1,10 +1,10 @@
-*buffish.txt*               A buffer switcher in the spirit of dirvish or vinegar
+*buffish.txt*		A buffer switcher in the spirit of dirvish or vinegar
 Buffish
 
-GPL V3 License Copyright (c) 2023 Steven Moazami
+GPL V3 License Copyright (c) 2024 Steven Moazami
 
 ==============================================================================
-CONTENTS                                        *buffish-contents*
+CONTENTS					*buffish-contents*
 
     1. Introduction ......... |buffish-introduction|
     2. Setup ................ |buffish-setup|
@@ -12,38 +12,41 @@ CONTENTS                                        *buffish-contents*
     4. Shortcuts ............ |buffish-shortcuts|
 
 ==============================================================================
-INTRODUCTION                                    *buffish-introduction*
+INTRODUCTION					*buffish-introduction*
 
 A buffer switcher in the spirit of dirvish or vinegar.
 
 Opens a buffer list in the current window, so you can select a buffer to
 display in the same window.
 
+If you have mini.icons installed, it will show the file type icon
+automatically.
+
 ------------------------------------------------------------------------------
-SETUP                                           *buffish-setup*
+SETUP						*buffish-setup*
 
 Map some key to `:Buffish<CR>` or type it.
 
 Or in lua you can map to `require("buffish").open()`
 
 ------------------------------------------------------------------------------
-MAPPINGS                                        *buffish-mappings*
+MAPPINGS					*buffish-mappings*
 
-<CR>             switch to the buffer
-dd               bd that buffer
-q                close without switching
-s                to open that buffer in a split either horizontally or
-                 vertically, depending on how much space you have
--                to go to the directory containing the file
-a                assign a shortcut to the buffer, you'll have to type a
-                 character afterwards to represent it
-r                remove the shortcut from the buffer
+<CR>		switch to the buffer
+dd		bd that buffer
+q		close without switching
+s		to open that buffer in a split either horizontally or
+		vertically, depending on how much space you have
+-		to go to the directory containing the file
+a		assign a shortcut to the buffer, you'll have to type a
+		character afterwards to represent it
+r		remove the shortcut from the buffer
 
 Also the line contains the full path so you can also yy to get the full path
 to the file, or use visual mode and yank a portion the normal way, etc.
 
 ------------------------------------------------------------------------------
-SHORTCUTS                                       *buffish-shortcuts*
+SHORTCUTS					*buffish-shortcuts*
 
 Once you set a shortcut via the keys above, you can run the lua function:
 

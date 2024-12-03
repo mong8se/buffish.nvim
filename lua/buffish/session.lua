@@ -12,7 +12,7 @@ local load_buffer_and_keep_alt = function(buffer_number)
   cmd("keepalt buffer " .. buffer_number)
 end
 
-local create_buffer = function()
+local get_session_buffer = function()
   if not (bufnr and api.nvim_buf_is_valid(bufnr)) then
     bufnr = api.nvim_create_buf(false, true)
     vim.bo[bufnr].filetype = "buffish"
@@ -41,7 +41,7 @@ end
 local safely_set_cursor = function(row)
   local win = vim.fn.getwininfo(vim.fn.win_getid())[1]
 
-  if win.bufnr == bufnr then
+  if win.bufnr == get_session_buffer() then
     api.nvim_win_set_cursor(win.winid, {
       math.min(api.nvim_buf_line_count(win.bufnr), row), 0
     })
@@ -51,7 +51,7 @@ end
 M.open_session_buffer = function()
   prev_bufnr = api.nvim_win_get_buf(0)
   prev_name = api.nvim_buf_get_name(0)
-  load_buffer_and_keep_alt(create_buffer())
+  load_buffer_and_keep_alt(get_session_buffer())
   safely_set_cursor(2)
 end
 
@@ -77,7 +77,7 @@ end
 M.rerender = function()
   local old_line = api.nvim_win_get_cursor(0)[1]
   vim.schedule(function()
-    display.render(bufnr)
+    display.render(get_session_buffer())
     safely_set_cursor(old_line)
   end)
 end

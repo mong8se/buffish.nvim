@@ -20,7 +20,7 @@ local get_session_buffer = function()
 
     local group = api.nvim_create_augroup('buffish-session', {clear = true})
 
-    local listener = api.nvim_create_autocmd({"BufDelete", "BufEnter"}, {
+    api.nvim_create_autocmd({"BufDelete", "BufEnter"}, {
       callback = function(details)
         if api.nvim_buf_is_loaded(bufnr) and vim.bo[details.buf].buflisted ==
             true then M.rerender() end
@@ -30,7 +30,7 @@ local get_session_buffer = function()
 
     api.nvim_create_autocmd("BufWipeout", {
       buffer = bufnr,
-      callback = function() api.nvim_del_autocmd(listener) end,
+      callback = function() api.nvim_del_augroup_by_id(group) end,
       group = group
     })
   end

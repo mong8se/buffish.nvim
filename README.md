@@ -9,6 +9,14 @@ display in the same window.
 As you switch buffers it sets the alternate buffer to the previous
 buffer so you can always swap between the last two buffers with `c-^`.
 
+## Installation
+
+Use your favorite package manager to load:
+
+```lua
+"mong8se/buffish.nvim"
+```
+
 ## Usage
 
 Map some key to `:Buffish<CR>` or to `require("buffish").open()`
